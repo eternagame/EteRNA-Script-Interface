@@ -1,0 +1,539 @@
+<block url="/web/script/create/">  
+    <block name="top-bar"></block>
+    <div style="float:left; width:720px; min-height:1px;">
+      <block builder="BuilderScriptPage"> 
+        <block name="script"></block>    
+      </block>    
+    </div>
+    <block name="side-bar"></block>
+    <div style="height:0px;">
+      <object id="viennalib"></object>
+    </div>     
+</block>
+
+<block url="/web/script/{nid}/">
+    <block name="top-bar"></block>
+    <div style="float:left; width:720px; min-height:1px;">
+      <block builder="BuilderScriptPage">
+        <block name="script"></block>
+        <div class="trans-panel rounded-5" style="margin-top:17px;">
+            <div class="trans-panel-bg rounded-5"></div>
+            <div class="yellow-header">Comments</div>
+            <block name="comments" style="padding:11px; padding-top:17px;"></block>
+        </div>
+      </block>
+    </div>
+    <block name="side-bar"></block>
+    <div style="height:0px;">  
+      <object id="viennalib"></object>
+    </div>     
+</block>
+
+<block url="/web/script/test/{nid}/">
+  <block name="top-bar"></block>
+    <div style="float:left; width:720px; min-height:1px;">
+      <block name="block-test-result" builder="BuilderScriptTestResultPage">
+		  <div class="trans-panel" style="padding:10px;">
+		    <div class="trans-panel-bg trans-panel-bg-blue-bordered rounded-5"></div>
+		    <div class="red-header">
+		      <center>Test Results</center>
+		    </div>
+		    <div id="record" style="text-align:right;padding:10px;"></div>
+		    <div  style="text-align:right;padding:10px;">
+		      Tested&nbsp;:&nbsp;<span id="tested-time"></span>
+		    </div>
+		    <div id="test-result-container">
+		    <div class="trans-panel" style="padding:10px; margin:10px;">
+		      <div class="trans-panel-bg rounded-5"></div>
+		      <div class="yellow-header" style="margin-bottom:10px;">
+		      Test before script created 
+		      </div>
+		      <div id="record-before" style="text-align:right; padding-bottom:10px;"></div>
+		      <block name="test-result-table" input="tbody:test-result-before;"></block>
+		      <div style="width:100%; text-align:center;"><img style="display: none; width:60%;" id="before-loading" src="https://s3.amazonaws.com/eterna/icon_img/loading_wh.gif"></img></div>
+		      <div id="before-result-more" class="centered clickable green-button rounded-5" style="width:100px; padding:5px;">
+		          More
+		      </div>
+		    </div>
+		    <div class="trans-panel" style="padding:10px; margin:10px;">
+		      <div class="trans-panel-bg rounded-5"></div>
+		      <div class="yellow-header" style="margin-bottom:10px;">
+		      Test after script created
+		      </div>
+		      <div id="record-after" style="float:right;padding-bottom:10px;"></div>
+		      <block name="test-result-table" input="tbody:test-result-after;"></block>
+          <div style="width:100%; text-align:center;"><img style="display: none; width:60%;" id="after-loading" src="https://s3.amazonaws.com/eterna/icon_img/loading_wh.gif"></img></div>
+          <div id="after-result-more" class="centered clickable green-button rounded-5" style="width:100px; padding:5px;">
+                More
+          </div>
+		    </div>
+		    </div>
+		  </div>
+		  
+		    <block defonly="true" name="test-result-table">
+          <table style="clear:both; padding:10px;">
+            <thead style="font-weight:bolder; background-color:#EAEAEA; color:black; text-align:center; opacity:0.5; border:1px solid #EAEAEA;">
+              <tr height=20>
+                <td width=240>Puzzle Title</td>
+                <td width=80>Solved</td>
+                <td width=80>Result</td>
+                <td width=80>Time(sec)</td>
+                <td width=150>Cause or Returns</td>
+              </tr>
+            </thead>
+            <tbody id="{tbody}">
+              <tr id="noresult" style="display:none;text-align:center;"><td colspan=5 >No result</td></tr>
+              <tr id="wait" style="display:none;text-align:center;"><td colspan=5 >Please wait for test results</td></tr>
+            </tbody>
+          </table>
+		    </block>
+		    
+		    <block defonly="true" name="test-result-block" tag="tr" style="height:25px;">
+		      <td><a href="/web/puzzle/{puzzle_nid}/">{puzzle_title}</a></td>
+		      <td align="center">{num_cleared}</td>
+		      <td align="center">
+		          {IF test_result}
+		            <span style="font-size: 13px; font-weight: bolder; color: #FEC942">PASS</span>
+		          {ELSE}
+		            <span style="color:red;">FAIL</span>
+		          {ENDIF}
+		      </td>
+		      <td align="center">{test_time}</td>
+		      <td>
+		        <div id="{puzzle_nid}_show_sequence" class="clickable centered green-button rounded-5" style="width:150px; padding:2px;">
+                  Show sequence
+            </div>
+            <input type="text" id="{puzzle_nid}_test_cause" style="width:150px;" value="{test_cause}"></input>
+		      </td>
+		    </block>
+		    
+		    <block defonly="true" name="block-test-record">
+		      success : <span style="font-size: 17px; font-weight: bolder; color: #FEC942">{success}</span> &nbsp;&nbsp;
+		      fail : <span style="font-size: 17px; font-weight: bolder; color: #FEC942">{fail}</span> &nbsp;&nbsp;
+		      total : <span style="font-size: 17px; font-weight: bolder; color: #FEC942">{total}</span> &nbsp;&nbsp;
+		      rate : <span style="font-size: 17px; font-weight: bolder; color: #FEC942">{rate}&nbsp;%</span>
+		    </block>
+		</block>
+    </div>
+    <block name="side-bar"></block>
+</block>
+
+
+          
+<block name="script">    
+    <div class="trans-panel rounded-5">
+      <div class="trans-panel-bg rounded-5"></div>
+      <div class="yellow-header">
+        <div style="float:left">Code Info</div>
+        <div class="clearer"></div>
+      </div>
+      <div style="clear:both; padding:20px;">
+        {IF nid}          
+        Title : <span style="width:400px; padding:5px; font-size: 17px; font-weight: bolder; color: #FEC942" id="title"></span>
+        <span id="start-from-copy" class="clickable green-button rounded-5" style="clear:both; margin-left:10px; padding:5px; width:100px;">
+          Start from Copy
+        </span>
+        <div style="padding-top:10px;">
+          Author : <span id="author" class="clickable" style="text-decoration:underline; font-size: 17px; font-weight: bolder; color: #FEC942"></span>
+        </div>
+        <div style="padding-top:10px;">
+          Description : <span id="description-info"></span>
+        </div>
+        <div style="padding-top:10px;">
+          Type : <span id="type-info" style="font-size: 17px; font-weight: bolder; color: #FEC942"></span>
+        </div>
+        <div style="padding-top:10px;">
+          Page view : <span id="pageview-info" style="font-size: 17px; font-weight: bolder; color: #FEC942"></span>
+        </div>
+        
+        <div id="see-results" style="padding-top:10px;">
+          Tested&nbsp;:&nbsp;<span id="tested-time" style="font-size: 17px; font-weight: bolder; color: #FEC942"></span>
+          <span class="clickable green-button rounded-5" style="display:block; width:260px; padding:5px; margin-top:10px;">
+            <a href="/web/script/test/{nid}/">See results of player puzzles</a>
+          </span>
+        </div>
+       
+    
+        {ELSE}
+        <div>
+          <span style="display:inline-block;width:15%;">Title&nbsp;:&nbsp;</span>
+          <input type="text" style="width:80%; height:10px;" placeholder="write title here!!!" id="title"></input>
+        </div>
+        <div style="padding-top:10px;">
+          <span style="display:inline-block;width:15%;">Description&nbsp;:&nbsp;</span>
+          <input type="text" style="width:80%; height:10px;"id="description" placeholder="write description here!!!"></input>
+        </div>
+        <div style="padding-top:10px;">
+          <span style="display:inline-block;width:15%;">Script Type&nbsp;:&nbsp;</span>
+          <select id="script_type">
+            <option value="Puzzle solving" selected>Puzzle solving</option>
+            <option value="RNA scoring">RNA scoring</option>
+            <option value="Etc">Etc</option>
+          </select>
+        </div>
+        <div id="test_tutorials" class="clickable green-button rounded-5" style="margin-top:10px; padding:2px; width:200px;">
+          Test on Player puzzles
+        </div>
+        <div id="test-result" style="padding:10px;">
+        </div>
+        {ENDIF}            
+        </div> 
+    </div>
+    <div class="trans-panel rounded-5" style="margin-top: 17px; margin-bottom: 30px;">
+      <div class="trans-panel-bg rounded-5"></div>
+      <div class="yellow-header">
+        <div style="float:left">
+          Code
+        </div>
+        <a href="/web/script/" class="green-button rounded-5" style="float:right; margin-left:10px; padding:1px; width:100px;">
+          Show Lists
+        </a>            
+          <div class="clearer"></div>
+        </div>
+        <div style="padding:33px;">
+        <form name="input-form" id="input-form">
+        <div style="padding-bottom:10px;" id="input-containers">
+          <block name="input-container" builder="BuilderInput" defonly="1" style="margin-top:5px;">
+          {IF create}
+            <span style="padding:10px;">name&nbsp;:&nbsp;<input type="text" id="name{num}" name="name{num}" placeholder="name" style="height:10px;"></input></span>
+            <span style="padding:10px;">value&nbsp;:&nbsp;<input type="text" id="name{num}-value" placeholder="value" style="height:10px;"></input></span>
+            <span class="green-button rounded-5 clickable" style="padding:2px;" id="delete">Delete</span>
+          {ELSE}
+            <span style="padding:10px;">name&nbsp;:&nbsp;{value}<input type="text" id="{name}" name="{name}" value="{value}" placeholder="name" style="height:10px;display:none;"></input></span>
+            <span style="padding:10px;">value&nbsp;:&nbsp;<textarea id="{name}-value" placeholder="value" style="height:30px; width:300px;"></textarea></span>
+          {ENDIF}
+          </block>
+        </div>                  
+        </form>   
+        {IF nid}
+        {ELSE}
+          <div class="green-button rounded-5 centered clickable" id="add-input" style="width:200px; margin-top:10px; margin-bottom:10px;">
+            Add Input
+          </div>  
+        {ENDIF} 
+        <textarea id="code" placeholder="Code" style="width:97%; height:300px; background-color:white;"></textarea>
+      </div>
+    </div>
+    <div class="centered" style="width:800px;">
+      <span style="padding-right:40px;">
+        Timeout : <input id="timeout" type="text" placeholder="10sec" style="width:100px; height:10px;"></input>
+      </span>
+      <span id="evaluation" class="green-button clickable rounded-5" style="padding:5px 40px;">
+          Evaluate 
+      </span>
+      <span id="documentation" class="green-button clickable rounded-5" style="padding:5px 20px;margin-left:10px;">
+          Documentation
+      </span>
+    </div>
+    {IF false}
+    <div>
+          <input type="checkbox" id="webworker" style="width:15px;"></input>WebWorker : <span id="timer-hour">00</span>:<span id="timer-min">00</span>:<span id="timer-sec">00</span>
+    </div>
+    {ENDIF}
+    <div class="trans-panel rounded-5" style="margin-top: 30px;">
+        <div class="trans-panel-bg rounded-5"></div>
+        <div class="yellow-header">
+          <div style="float:left">Result Console</div>
+          <div class="clearer"></div>
+        </div>
+        <div style="padding:33px;">
+      <textarea id="result" placeholder="Result" style="width:97%; height:100px;"></textarea>
+      </div>        
+    </div>
+    {IF nid == null}
+      <div class="clickable green-button centered rounded-5" style="margin-top:10px; padding:5px; width:150px;" id="submit-script">
+        Submit Script
+      </div>
+    {ENDIF}
+</block>
+    
+      
+<block url="/web/script/documentation/functions/">
+  <block name="top-bar"></block>
+    <div style="float:left; width:720px; min-height:1px;"> 
+       <div class="trans-panel rounded-5" style="margin-top: 17px; margin-bottom: 30px;">
+          <div class="trans-panel-bg rounded-5"></div>
+          <div class="yellow-header">
+            <div style="float:left">Functions</div>
+            <div class="clearer"></div>
+          </div>
+          <div style="padding:33px;">
+          <div style="padding:10px;">
+            <a href="https://docs.google.com/document/d/1VC94wTuRhNd-FN60ueaBc5mUxBsiIy8UzJzQL6ap3CE/edit#" class="clickable">Eterna Script Intro &nbsp;(by Eli Fisker)</a>
+          </div>
+          <div style="padding:10px;">
+            <div class="script-section-title">Pervasives</div>
+            <div class="script-functions">
+              <div class="script-title">out(text)</div>
+              <div class="script-description">display text in result textarea</div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">outln(text)</div>
+              <div class="script-description">display text in result textarea with newline</div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">clear()</div>
+              <div class="script-description">clear result textarea</div>
+            </div>
+          </div>
+          <div style="padding:10px;">
+            <div class="script-section-title">Library functions</div>
+            <div class="script-functions">
+              <div class="script-title">Lib.bases</div>
+              <div class="script-description"> "AGCU" </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">Lib.fold(sequence)</div>
+              <div class="script-description">
+                <div>return folded structure with sequence</div>
+                <div>ex) Lib.fold("GGGGCCCC") = "((....))";</div>
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">Lib.energyOfStruct(sequence, structure)</div>
+              <div class="script-description">
+                <div>return energy of structure</div>
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">Lib.EternaScript(script id)</div>
+              <div class="script-description">
+                <div>return other user's script</div>
+                <div>ex) var func = Lib.EternaScript(script_id);</div>
+                <div>ex) func(parameters);</div>
+              </div>
+            </div>            
+            <div class="script-functions">
+              <div class="script-title">Lib.getStructure(puzzle id)</div>
+              <div class="script-description">
+                <div>return structure of puzzle</div>
+                <div>ex) Lib.getStructure(1001759)</div>
+              </div>
+            </div>            
+            <div class="script-functions">
+              <div class="script-title">Lib.replace(sequence, index, target)</div>
+              <div class="script-description"> 
+                <div>return sequence which character at index in sequence replaced to target</div>
+                <div>ex) Lib.replace("AGCU", 2, "A") = "AGAU";</div> 
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">Lib.nextSequence(sequence)</div>
+              <div class="script-description">
+                <div>return next sequence of sequence in the order of default bases</div>
+                <div>ex) Lib.nextSequence("AAAA") = "GAAA";</div>
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">Lib.nextSequenceWithBases(sequence, bases)</div>
+              <div class="script-description">
+                <div>return next sequence of sequence in the order of bases</div>
+                <div>ex) Lib.nextSequenceWithBases("UUUU", "UCGA") = "CUUU";</div>
+                <div>ex) Lib.nextSequenceWithBases("AUAA", "UCGA") = "UCAA";</div> 
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">Lib.random(from, to)</div>
+              <div class="script-description">return random number between from to</div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">Lib.randomSequence(size)</div>
+              <div class="script-description">return random sequence with length of size</div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">Lib.map(function, sequence)</div>
+              <div class="script-description">applies function to each sequence bases</div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">Lib.filter(function, sequence)</div>
+              <div class="script-description">return sequences only satisfy the function</div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">Lib.splitDefault(structure)</div>
+              <div class="script-description">
+                <div>split structure into a structure array</div>
+                <div>ex) Lib.splitDefault("((..))") = ["((", "..", "))"];</div>
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">Lib.join(array)</div>
+              <div class="script-description">
+                <div>join array with each element to sequence</div>
+                <div>ex) Lib.join(Lib.split("((..))")) = "((..))";</div>
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">Lib.distance(source structure, destination structure)</div>
+              <div class="script-description">
+                <div>return differences between source structure and destination structure</div>
+                <div>if same then 0 else +1</div>
+                <div>if different length then just return -1</div>
+                <div>ex) Lib.distance("((..))", "((()))") = 2</div>
+                <div>ex) Lib.distance("(((())))", "(())") = -1</div>
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">Lib.distanceCustom(function, source structure, destination structure)</div>
+              <div class="script-description">
+                <div>return differences between source structure and destination structure with custom rule</div>
+                <div>ex) Lib.distanceCustom(function(index){ ... }, source, dest);</div>
+              </div>
+            </div>                                                            
+          </div>
+          <div style="padding:10px;">
+            <div class="script-section-title">Class RNA<a href="/web/script/" style="font-size:12px; padding-left:10px;">example code</a></div>
+            
+            <div class="script-functions">
+              <div class="script-title">getPairmap(structure)</div>
+              <div class="script-description">
+                <div>return the array of pair information</div>
+                <div>ex) getPairmap("((..))") = [5,4, , ,2,1] </div>
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">getStructure</div>
+              <div class="script-description">
+                <div>return structure</div>
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">getRootElement</div>
+              <div class="script-description">
+                <div>return root RNAElement class of rna object</div>
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">map</div>
+              <div class="script-description">
+                <div>applies function to all RNAElement</div>
+              </div>
+            </div>             
+          </div>
+          <div style="padding:10px;">
+            <div class="script-section-title">Class RNAElement</div>
+            <div class="script-functions">
+              <div class="script-title">getParent()</div>
+              <div class="script-description">
+                <div>return the parent RNAElement class</div>
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">getChilds()</div>
+              <div class="script-description">
+                <div>return the child RNAElement class array</div>
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">getElements()</div>
+              <div class="script-description">
+                <div>return the array of structure and index JSON objects</div>
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">isPaired()</div>
+              <div class="script-description">
+                <div>return boolean whether the stack element is paired or not</div>
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">getBaseType()</div>
+              <div class="script-description">
+                <div>return RNAElement.Stack or RNAElement.Loop if the element is stack or loop</div>
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">getType()</div>
+              <div class="script-description">
+                <div>return RNAElement.Hairpin, RNAElement.Bulge, RNAElement.Internal, RNAElement.Multiloop or RNAElement.Dangling if the element is hairpin, bulge, internal, multiloop or dangling</div>
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">getIndices()</div>
+              <div class="script-description">
+                <div>return the array of indices</div>
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">isStack()/isLoop()/isHairpin()/isBulge()/isInternal()/isMultiloop()/isDangling()</div>
+              <div class="script-description">
+                <div>return boolean wheter the element is stack, loop, hairpin, bulge, internal, multiloop or dangling</div>
+              </div>
+            </div>
+            <div class="script-functions">
+              <div class="script-title">getSegmentCount()</div>
+              <div class="script-description">
+                <div>return how many structure segments included</div>
+                <div>if the multiloop consists of 2 branches then getSegmentCount() of multiloop returns 2</div>
+              </div>
+            </div>
+          </div>                               
+        </div>
+      </div>
+    </div>
+    <block name="side-bar"></block> 
+</block>
+
+
+<block url="/web/script/">
+    <block name="top-bar"></block>
+    <div style="float:left; width:720px; min-height:1px;"> 
+      <block builder="BuilderScriptListsPage">  
+        <div class="trans-panel rounded-5" builder="BuilderScriptListsPage">
+          <div class="trans-panel-bg rounded-5"></div>
+          <div class="yellow-header">
+            <div style="float:left;">
+              Scripts <span style="font-size:12px;">(alpha test)</span>
+            </div>
+            <div style="float:right; font-size:11px; padding-bottom:10px;">
+              sort by&nbsp;&nbsp;
+              {IF sort == "date"}
+                <i><a style="text-decoration:underline" href="{date_sort_url}">Post date</a></i>
+              {ELSE}
+                <a style="text-decoration:underline" href="{date_sort_url}">Post date</a>
+              {ENDIF}&nbsp;
+              {IF sort == "success_rate"}
+                <i><a style="text-decoration:underline" href="{success_rate_sort_url}">Success rate</a></i>
+              {ELSE}
+                <a style="text-decoration:underline" href="{success_rate_sort_url}">Success rate</a>
+              {ENDIF}&nbsp;
+              <input type="text" placeholder="Search Scripts" id="search" style="height:12px; width:100px;text-align:center;"></input>
+            </div>
+            <a href="/web/script/create/" class="green-button clickable centered rounded-5" style="clear:both; float:right; padding:2px; font-size:14px; width:150px;">
+                Create New Script 
+            </a>
+            <span id="sendfeedback" class="green-button clickable centered rounded-5" style="float:right; margin-right:10px; padding:2px; font-size:14px; width:150px;">
+                Send Feedback 
+            </span>
+            <div class="clearer"></div>
+          </div>
+          <div id="script_lists" class="news-list">
+            <block defonly="true" name="script-lists" style="padding-top:17px">
+              <div style="float:left">
+                <img src="https://s3.amazonaws.com/eterna/eterna2/script-icon.png"></img>
+              </div>
+              <div style="float:left; padding-left:22px; width:500px;">
+                <div style="color:#ABE0FE; text-decoration:underline">
+                  <a style="font-weight:bolder;" href="/web/script/{id}/">{title}&nbsp;({commentcounts})</a>
+                </div>
+              </div>
+              <div style="clear:both; padding-left:50px; padding-top:3px;">
+                {body}
+              </div>
+              <div style="clear:both; padding-top:7px; padding-left:50px; font-size:10px;">
+                {name}&nbsp;&nbsp;/&nbsp;&nbsp;
+                {created}
+                {IF type == "Puzzle solving"}
+                  &nbsp;&nbsp;/&nbsp;&nbsp;
+                  <span style="font-size:15px; font-weight: bolder; color: #FEC942">{success_rate}%</span>&nbsp; success&nbsp;&nbsp;/&nbsp;&nbsp;
+                  {tested_time}
+                {ENDIF}
+              </div>
+              <div class="clearer"></div>
+            </block>                  
+          </div> 
+        </div>
+        <div style="text-align:center; padding-top:17px" id="pager"></div>
+    </block>       
+  </div>
+  <block name="side-bar"></block> 
+</block>  
