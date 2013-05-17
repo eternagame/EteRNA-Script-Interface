@@ -1,11 +1,11 @@
 // Note: For maximum-speed code, see "Optimizing Code" on the Emscripten wiki, https://github.com/kripken/emscripten/wiki/Optimizing-Code
 // Note: Some Emscripten settings may limit the speed of the generated code.
 try {
-  this['vrna211'] = vrna211;
+  this['LibVrna211'] = LibVrna211;
 } catch(e) {
-  this['vrna211'] = vrna211 = {};
+  this['LibVrna211'] = LibVrna211 = {};
 }
-// The environment setup code below is customized to use vrna211.
+// The environment setup code below is customized to use LibVrna211.
 // *** Environment setup code ***
 var ENVIRONMENT_IS_NODE = typeof process === 'object' && typeof require === 'function';
 var ENVIRONMENT_IS_WEB = typeof window === 'object';
@@ -14,15 +14,15 @@ var ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIR
 if (ENVIRONMENT_IS_NODE) {
   // Expose functionality in the same simple way that the shells work
   // Note that we pollute the global namespace here, otherwise we break in node
-  vrna211['print'] = function(x) {
+  LibVrna211['print'] = function(x) {
     process['stdout'].write(x + '\n');
   };
-  vrna211['printErr'] = function(x) {
+  LibVrna211['printErr'] = function(x) {
     process['stderr'].write(x + '\n');
   };
   var nodeFS = require('fs');
   var nodePath = require('path');
-  vrna211['read'] = function(filename, binary) {
+  LibVrna211['read'] = function(filename, binary) {
     filename = nodePath['normalize'](filename);
     var ret = nodeFS['readFileSync'](filename);
     // The path is absolute if the normalized version is the same as the resolved.
@@ -33,65 +33,65 @@ if (ENVIRONMENT_IS_NODE) {
     if (ret && !binary) ret = ret.toString();
     return ret;
   };
-  vrna211['readBinary'] = function(filename) { return vrna211['read'](filename, true) };
-  vrna211['load'] = function(f) {
+  LibVrna211['readBinary'] = function(filename) { return LibVrna211['read'](filename, true) };
+  LibVrna211['load'] = function(f) {
     globalEval(read(f));
   };
-  if (!vrna211['arguments']) {
-    vrna211['arguments'] = process['argv'].slice(2);
+  if (!LibVrna211['arguments']) {
+    LibVrna211['arguments'] = process['argv'].slice(2);
   }
 }
 if (ENVIRONMENT_IS_SHELL) {
-  vrna211['print'] = print;
-  if (typeof printErr != 'undefined') vrna211['printErr'] = printErr; // not present in v8 or older sm
-  vrna211['read'] = read;
-  vrna211['readBinary'] = function(f) {
+  LibVrna211['print'] = print;
+  if (typeof printErr != 'undefined') LibVrna211['printErr'] = printErr; // not present in v8 or older sm
+  LibVrna211['read'] = read;
+  LibVrna211['readBinary'] = function(f) {
     return read(f, 'binary');
   };
-  if (!vrna211['arguments']) {
+  if (!LibVrna211['arguments']) {
     if (typeof scriptArgs != 'undefined') {
-      vrna211['arguments'] = scriptArgs;
+      LibVrna211['arguments'] = scriptArgs;
     } else if (typeof arguments != 'undefined') {
-      vrna211['arguments'] = arguments;
+      LibVrna211['arguments'] = arguments;
     }
   }
 }
 if (ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_WORKER) {
-  if (!vrna211['print']) {
-    vrna211['print'] = function(x) {
+  if (!LibVrna211['print']) {
+    LibVrna211['print'] = function(x) {
       console.log(x);
     };
   }
-  if (!vrna211['printErr']) {
-    vrna211['printErr'] = function(x) {
+  if (!LibVrna211['printErr']) {
+    LibVrna211['printErr'] = function(x) {
       console.log(x);
     };
   }
 }
 if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
-  vrna211['read'] = function(url) {
+  LibVrna211['read'] = function(url) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, false);
     xhr.send(null);
     return xhr.responseText;
   };
-  if (!vrna211['arguments']) {
+  if (!LibVrna211['arguments']) {
     if (typeof arguments != 'undefined') {
-      vrna211['arguments'] = arguments;
+      LibVrna211['arguments'] = arguments;
     }
   }
 }
 if (ENVIRONMENT_IS_WORKER) {
   // We can do very little here...
   var TRY_USE_DUMP = false;
-  if (!vrna211['print']) {
-    vrna211['print'] = (TRY_USE_DUMP && (typeof(dump) !== "undefined") ? (function(x) {
+  if (!LibVrna211['print']) {
+    LibVrna211['print'] = (TRY_USE_DUMP && (typeof(dump) !== "undefined") ? (function(x) {
       dump(x);
     }) : (function(x) {
       // self.postMessage(x); // enable this if you want stdout to be sent as messages
     }));
   }
-  vrna211['load'] = importScripts;
+  LibVrna211['load'] = importScripts;
 }
 if (!ENVIRONMENT_IS_WORKER && !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIRONMENT_IS_SHELL) {
   // Unreachable because SHELL is dependant on the others
@@ -100,27 +100,27 @@ if (!ENVIRONMENT_IS_WORKER && !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !EN
 function globalEval(x) {
   eval.call(null, x);
 }
-if (!vrna211['load'] == 'undefined' && vrna211['read']) {
-  vrna211['load'] = function(f) {
-    globalEval(vrna211['read'](f));
+if (!LibVrna211['load'] == 'undefined' && LibVrna211['read']) {
+  LibVrna211['load'] = function(f) {
+    globalEval(LibVrna211['read'](f));
   };
 }
-if (!vrna211['print']) {
-  vrna211['print'] = function(){};
+if (!LibVrna211['print']) {
+  LibVrna211['print'] = function(){};
 }
-if (!vrna211['printErr']) {
-  vrna211['printErr'] = vrna211['print'];
+if (!LibVrna211['printErr']) {
+  LibVrna211['printErr'] = LibVrna211['print'];
 }
-if (!vrna211['arguments']) {
-  vrna211['arguments'] = [];
+if (!LibVrna211['arguments']) {
+  LibVrna211['arguments'] = [];
 }
 // *** Environment setup code ***
 // Closure helpers
-vrna211.print = vrna211['print'];
-vrna211.printErr = vrna211['printErr'];
+LibVrna211.print = LibVrna211['print'];
+LibVrna211.printErr = LibVrna211['printErr'];
 // Callbacks
-if (!vrna211['preRun']) vrna211['preRun'] = [];
-if (!vrna211['postRun']) vrna211['postRun'] = [];
+if (!LibVrna211['preRun']) LibVrna211['preRun'] = [];
+if (!LibVrna211['postRun']) LibVrna211['postRun'] = [];
 // === Auto-generated preamble library stuff ===
 //========================================
 // Runtime code shared with compiler
@@ -306,9 +306,9 @@ var Runtime = {
     if (args && args.length) {
       if (!args.splice) args = Array.prototype.slice.call(args);
       args.splice(0, 0, ptr);
-      return vrna211['dynCall_' + sig].apply(null, args);
+      return LibVrna211['dynCall_' + sig].apply(null, args);
     } else {
-      return vrna211['dynCall_' + sig].call(null, ptr);
+      return LibVrna211['dynCall_' + sig].call(null, ptr);
     }
   },
   functionPointers: [],
@@ -328,7 +328,7 @@ var Runtime = {
     if (!Runtime.warnOnce.shown) Runtime.warnOnce.shown = {};
     if (!Runtime.warnOnce.shown[text]) {
       Runtime.warnOnce.shown[text] = 1;
-      vrna211.printErr(text);
+      LibVrna211.printErr(text);
     }
   },
   funcWrappers: {},
@@ -401,7 +401,7 @@ var tempValue, tempInt, tempBigInt, tempInt2, tempBigInt2, tempPair, tempBigIntI
 var tempI64, tempI64b;
 var tempRet0, tempRet1, tempRet2, tempRet3, tempRet4, tempRet5, tempRet6, tempRet7, tempRet8, tempRet9;
 function abort(text) {
-  vrna211.print(text + ':\n' + (new Error).stack);
+  LibVrna211.print(text + ':\n' + (new Error).stack);
   ABORT = true;
   throw "Assertion: " + text;
 }
@@ -431,11 +431,11 @@ var globalScope = this;
 function ccall(ident, returnType, argTypes, args) {
   return ccallFunc(getCFunc(ident), returnType, argTypes, args);
 }
-vrna211["ccall"] = ccall;
+LibVrna211["ccall"] = ccall;
 // Returns the C function with a specified identifier (for C++, you need to do manual name mangling)
 function getCFunc(ident) {
   try {
-    var func = globalScope['vrna211']['_' + ident]; // closure exported function
+    var func = globalScope['LibVrna211']['_' + ident]; // closure exported function
     if (!func) func = eval('_' + ident); // explicit lookup
   } catch(e) {
   }
@@ -488,7 +488,7 @@ function cwrap(ident, returnType, argTypes) {
     return ccallFunc(func, returnType, argTypes, Array.prototype.slice.call(arguments));
   }
 }
-vrna211["cwrap"] = cwrap;
+LibVrna211["cwrap"] = cwrap;
 // Sets a value in memory in a dynamic way at run-time. Uses the
 // type data. This is the same as makeSetValue, except that
 // makeSetValue is done at compile-time and generates the needed
@@ -511,7 +511,7 @@ function setValue(ptr, value, type, noSafe) {
       default: abort('invalid type for setValue: ' + type);
     }
 }
-vrna211['setValue'] = setValue;
+LibVrna211['setValue'] = setValue;
 // Parallel to setValue.
 function getValue(ptr, type, noSafe) {
   type = type || 'i8';
@@ -528,15 +528,15 @@ function getValue(ptr, type, noSafe) {
     }
   return null;
 }
-vrna211['getValue'] = getValue;
+LibVrna211['getValue'] = getValue;
 var ALLOC_NORMAL = 0; // Tries to use _malloc()
 var ALLOC_STACK = 1; // Lives for the duration of the current function call
 var ALLOC_STATIC = 2; // Cannot be freed
 var ALLOC_NONE = 3; // Do not allocate
-vrna211['ALLOC_NORMAL'] = ALLOC_NORMAL;
-vrna211['ALLOC_STACK'] = ALLOC_STACK;
-vrna211['ALLOC_STATIC'] = ALLOC_STATIC;
-vrna211['ALLOC_NONE'] = ALLOC_NONE;
+LibVrna211['ALLOC_NORMAL'] = ALLOC_NORMAL;
+LibVrna211['ALLOC_STACK'] = ALLOC_STACK;
+LibVrna211['ALLOC_STATIC'] = ALLOC_STATIC;
+LibVrna211['ALLOC_NONE'] = ALLOC_NONE;
 // allocate(): This is for internal use. You can use it yourself as well, but the interface
 //             is a little tricky (see docs right below). The reason is that it is optimized
 //             for multiple syntaxes to save space in generated code. So you should
@@ -605,7 +605,7 @@ function allocate(slab, types, allocator, ptr) {
   }
   return ret;
 }
-vrna211['allocate'] = allocate;
+LibVrna211['allocate'] = allocate;
 function Pointer_stringify(ptr, /* optional */ length) {
   // Find the length, and check for UTF while doing so
   var hasUtf = false;
@@ -638,7 +638,7 @@ function Pointer_stringify(ptr, /* optional */ length) {
   }
   return ret;
 }
-vrna211['Pointer_stringify'] = Pointer_stringify;
+LibVrna211['Pointer_stringify'] = Pointer_stringify;
 // Memory management
 var PAGE_SIZE = 4096;
 function alignMemoryPage(x) {
@@ -649,11 +649,11 @@ var HEAP8, HEAPU8, HEAP16, HEAPU16, HEAP32, HEAPU32, HEAPF32, HEAPF64;
 var STACK_ROOT, STACKTOP, STACK_MAX;
 var STATICTOP;
 function enlargeMemory() {
-  abort('Cannot enlarge memory arrays in asm.js. Either (1) compile with -s TOTAL_MEMORY=X with X higher than the current value, or (2) set vrna211.TOTAL_MEMORY before the program runs.');
+  abort('Cannot enlarge memory arrays in asm.js. Either (1) compile with -s TOTAL_MEMORY=X with X higher than the current value, or (2) set LibVrna211.TOTAL_MEMORY before the program runs.');
 }
-var TOTAL_STACK = vrna211['TOTAL_STACK'] || 5242880;
-var TOTAL_MEMORY = vrna211['TOTAL_MEMORY'] || 16777216;
-var FAST_MEMORY = vrna211['FAST_MEMORY'] || 2097152;
+var TOTAL_STACK = LibVrna211['TOTAL_STACK'] || 5242880;
+var TOTAL_MEMORY = LibVrna211['TOTAL_MEMORY'] || 16777216;
+var FAST_MEMORY = LibVrna211['FAST_MEMORY'] || 2097152;
 // Initialize the runtime's memory
 // check for full engine support (use string 'subarray' to avoid closure compiler confusion)
 assert(!!Int32Array && !!Float64Array && !!(new Int32Array(1)['subarray']) && !!(new Int32Array(1)['set']),
@@ -670,15 +670,15 @@ HEAPF64 = new Float64Array(buffer);
 // Endianness check (note: assumes compiler arch was little-endian)
 HEAP32[0] = 255;
 assert(HEAPU8[0] === 255 && HEAPU8[3] === 0, 'Typed arrays 2 must be run on a little-endian system');
-vrna211['HEAP'] = HEAP;
-vrna211['HEAP8'] = HEAP8;
-vrna211['HEAP16'] = HEAP16;
-vrna211['HEAP32'] = HEAP32;
-vrna211['HEAPU8'] = HEAPU8;
-vrna211['HEAPU16'] = HEAPU16;
-vrna211['HEAPU32'] = HEAPU32;
-vrna211['HEAPF32'] = HEAPF32;
-vrna211['HEAPF64'] = HEAPF64;
+LibVrna211['HEAP'] = HEAP;
+LibVrna211['HEAP8'] = HEAP8;
+LibVrna211['HEAP16'] = HEAP16;
+LibVrna211['HEAP32'] = HEAP32;
+LibVrna211['HEAPU8'] = HEAPU8;
+LibVrna211['HEAPU16'] = HEAPU16;
+LibVrna211['HEAPU32'] = HEAPU32;
+LibVrna211['HEAPF32'] = HEAPF32;
+LibVrna211['HEAPF64'] = HEAPF64;
 STACK_ROOT = STACKTOP = Runtime.alignMemory(1);
 STACK_MAX = TOTAL_STACK; // we lose a little stack here, but TOTAL_STACK is nice and round so use that as the max
 var tempDoublePtr = Runtime.alignMemory(allocate(12, 'i8', ALLOC_STACK), 8);
@@ -749,7 +749,7 @@ function intArrayFromString(stringy, dontAddNull, length /* optional */) {
   }
   return ret;
 }
-vrna211['intArrayFromString'] = intArrayFromString;
+LibVrna211['intArrayFromString'] = intArrayFromString;
 function intArrayToString(array) {
   var ret = [];
   for (var i = 0; i < array.length; i++) {
@@ -761,7 +761,7 @@ function intArrayToString(array) {
   }
   return ret.join('');
 }
-vrna211['intArrayToString'] = intArrayToString;
+LibVrna211['intArrayToString'] = intArrayToString;
 // Write a Javascript array to somewhere in the heap
 function writeStringToMemory(string, buffer, dontAddNull) {
   var array = intArrayFromString(string, dontAddNull);
@@ -772,13 +772,13 @@ function writeStringToMemory(string, buffer, dontAddNull) {
     i = i + 1;
   }
 }
-vrna211['writeStringToMemory'] = writeStringToMemory;
+LibVrna211['writeStringToMemory'] = writeStringToMemory;
 function writeArrayToMemory(array, buffer) {
   for (var i = 0; i < array.length; i++) {
     HEAP8[(((buffer)+(i))|0)]=array[i];
   }
 }
-vrna211['writeArrayToMemory'] = writeArrayToMemory;
+LibVrna211['writeArrayToMemory'] = writeArrayToMemory;
 function unSign(value, bits, ignore, sig) {
   if (value >= 0) {
     return value;
@@ -819,8 +819,8 @@ var calledInit = false, calledRun = false;
 var runDependencyWatcher = null;
 function addRunDependency(id) {
   runDependencies++;
-  if (vrna211['monitorRunDependencies']) {
-    vrna211['monitorRunDependencies'](runDependencies);
+  if (LibVrna211['monitorRunDependencies']) {
+    LibVrna211['monitorRunDependencies'](runDependencies);
   }
   if (id) {
     assert(!runDependencyTracking[id]);
@@ -832,47 +832,47 @@ function addRunDependency(id) {
         for (var dep in runDependencyTracking) {
           if (!shown) {
             shown = true;
-            vrna211.printErr('still waiting on run dependencies:');
+            LibVrna211.printErr('still waiting on run dependencies:');
           }
-          vrna211.printErr('dependency: ' + dep);
+          LibVrna211.printErr('dependency: ' + dep);
         }
         if (shown) {
-          vrna211.printErr('(end of list)');
+          LibVrna211.printErr('(end of list)');
         }
       }, 6000);
     }
   } else {
-    vrna211.printErr('warning: run dependency added without ID');
+    LibVrna211.printErr('warning: run dependency added without ID');
   }
 }
-vrna211['addRunDependency'] = addRunDependency;
+LibVrna211['addRunDependency'] = addRunDependency;
 function removeRunDependency(id) {
   runDependencies--;
-  if (vrna211['monitorRunDependencies']) {
-    vrna211['monitorRunDependencies'](runDependencies);
+  if (LibVrna211['monitorRunDependencies']) {
+    LibVrna211['monitorRunDependencies'](runDependencies);
   }
   if (id) {
     assert(runDependencyTracking[id]);
     delete runDependencyTracking[id];
   } else {
-    vrna211.printErr('warning: run dependency removed without ID');
+    LibVrna211.printErr('warning: run dependency removed without ID');
   }
   if (runDependencies == 0) {
     if (runDependencyWatcher !== null) {
       clearInterval(runDependencyWatcher);
       runDependencyWatcher = null;
     } 
-    // If run has never been called, and we should call run (INVOKE_RUN is true, and vrna211.noInitialRun is not false)
+    // If run has never been called, and we should call run (INVOKE_RUN is true, and LibVrna211.noInitialRun is not false)
     if (!calledRun && shouldRunNow) run();
   }
 }
-vrna211['removeRunDependency'] = removeRunDependency;
-vrna211["preloadedImages"] = {}; // maps url to image data
-vrna211["preloadedAudios"] = {}; // maps url to audio data
+LibVrna211['removeRunDependency'] = removeRunDependency;
+LibVrna211["preloadedImages"] = {}; // maps url to image data
+LibVrna211["preloadedAudios"] = {}; // maps url to audio data
 function addPreRun(func) {
-  if (!vrna211['preRun']) vrna211['preRun'] = [];
-  else if (typeof vrna211['preRun'] == 'function') vrna211['preRun'] = [vrna211['preRun']];
-  vrna211['preRun'].push(func);
+  if (!LibVrna211['preRun']) LibVrna211['preRun'] = [];
+  else if (typeof LibVrna211['preRun'] == 'function') LibVrna211['preRun'] = [LibVrna211['preRun']];
+  LibVrna211['preRun'].push(func);
 }
 var awaitingMemoryInitializer = false;
 function loadMemoryInitializer(filename) {
@@ -883,7 +883,7 @@ function loadMemoryInitializer(filename) {
   // always do this asynchronously, to keep shell and web as similar as possible
   addPreRun(function() {
     if (ENVIRONMENT_IS_NODE || ENVIRONMENT_IS_SHELL) {
-      applyData(vrna211['readBinary'](filename));
+      applyData(LibVrna211['readBinary'](filename));
     } else {
       Browser.asyncLoad(filename, function(data) {
         applyData(data);
@@ -945,8 +945,8 @@ var _stderr = _stderr=allocate([0,0,0,0], "i8", ALLOC_STATIC);
 function runPostSets() {
 }
 if (!awaitingMemoryInitializer) runPostSets();
-  vrna211["_strlen"] = _strlen;
-  vrna211["_strcpy"] = _strcpy;
+  LibVrna211["_strlen"] = _strlen;
+  LibVrna211["_strcpy"] = _strcpy;
   var _fabs=Math.abs;
   var ERRNO_CODES={E2BIG:7,EACCES:13,EADDRINUSE:98,EADDRNOTAVAIL:99,EAFNOSUPPORT:97,EAGAIN:11,EALREADY:114,EBADF:9,EBADMSG:74,EBUSY:16,ECANCELED:125,ECHILD:10,ECONNABORTED:103,ECONNREFUSED:111,ECONNRESET:104,EDEADLK:35,EDESTADDRREQ:89,EDOM:33,EDQUOT:122,EEXIST:17,EFAULT:14,EFBIG:27,EHOSTUNREACH:113,EIDRM:43,EILSEQ:84,EINPROGRESS:115,EINTR:4,EINVAL:22,EIO:5,EISCONN:106,EISDIR:21,ELOOP:40,EMFILE:24,EMLINK:31,EMSGSIZE:90,EMULTIHOP:72,ENAMETOOLONG:36,ENETDOWN:100,ENETRESET:102,ENETUNREACH:101,ENFILE:23,ENOBUFS:105,ENODATA:61,ENODEV:19,ENOENT:2,ENOEXEC:8,ENOLCK:37,ENOLINK:67,ENOMEM:12,ENOMSG:42,ENOPROTOOPT:92,ENOSPC:28,ENOSR:63,ENOSTR:60,ENOSYS:38,ENOTCONN:107,ENOTDIR:20,ENOTEMPTY:39,ENOTRECOVERABLE:131,ENOTSOCK:88,ENOTSUP:95,ENOTTY:25,ENXIO:6,EOPNOTSUPP:45,EOVERFLOW:75,EOWNERDEAD:130,EPERM:1,EPIPE:32,EPROTO:71,EPROTONOSUPPORT:93,EPROTOTYPE:91,ERANGE:34,EROFS:30,ESPIPE:29,ESRCH:3,ESTALE:116,ETIME:62,ETIMEDOUT:110,ETXTBSY:26,EWOULDBLOCK:11,EXDEV:18};
   function ___setErrNo(value) {
@@ -1199,7 +1199,7 @@ if (!awaitingMemoryInitializer) runPostSets();
             removeRunDependency('cp ' + fullname);
           }
           var handled = false;
-          vrna211['preloadPlugins'].forEach(function(plugin) {
+          LibVrna211['preloadPlugins'].forEach(function(plugin) {
             if (handled) return;
             if (plugin['canHandle'](fullname)) {
               plugin['handle'](byteArray, fullname, finish, function() {
@@ -1233,12 +1233,12 @@ if (!awaitingMemoryInitializer) runPostSets();
         var success = true;
         if (typeof XMLHttpRequest !== 'undefined') {
           throw new Error("Lazy loading should have been performed (contents set) in createLazyFile, but it was not. Lazy loading only works in web workers. Use --embed-file or --preload-file in emcc on the main thread.");
-        } else if (vrna211['read']) {
+        } else if (LibVrna211['read']) {
           // Command-line.
           try {
             // WARNING: Can't read binary files in V8's d8 or tracemonkey's js, as
             //          read() will try to parse UTF8.
-            obj.contents = intArrayFromString(vrna211['read'](obj.url), true);
+            obj.contents = intArrayFromString(LibVrna211['read'](obj.url), true);
           } catch (e) {
             success = false;
           }
@@ -1264,10 +1264,10 @@ if (!awaitingMemoryInitializer) runPostSets();
         assert(!FS.init.initialized, 'FS.init was previously called. If you want to initialize later with custom parameters, remove any earlier calls (note that one is automatically added to the generated code)');
         FS.init.initialized = true;
         FS.ensureRoot();
-        // Allow vrna211.stdin etc. to provide defaults, if none explicitly passed to us here
-        input = input || vrna211['stdin'];
-        output = output || vrna211['stdout'];
-        error = error || vrna211['stderr'];
+        // Allow LibVrna211.stdin etc. to provide defaults, if none explicitly passed to us here
+        input = input || LibVrna211['stdin'];
+        output = output || LibVrna211['stdout'];
+        error = error || LibVrna211['stderr'];
         // Default handlers.
         var stdinOverridden = true, stdoutOverridden = true, stderrOverridden = true;
         if (!input) {
@@ -1303,13 +1303,13 @@ if (!awaitingMemoryInitializer) runPostSets();
           stdoutOverridden = false;
           output = simpleOutput;
         }
-        if (!output.printer) output.printer = vrna211['print'];
+        if (!output.printer) output.printer = LibVrna211['print'];
         if (!output.buffer) output.buffer = [];
         if (!error) {
           stderrOverridden = false;
           error = simpleOutput;
         }
-        if (!error.printer) error.printer = vrna211['print'];
+        if (!error.printer) error.printer = LibVrna211['print'];
         if (!error.buffer) error.buffer = [];
         // Create the temporary folder, if not already created
         try {
@@ -1853,8 +1853,8 @@ if (!awaitingMemoryInitializer) runPostSets();
       return pdest;
     }
   var _log=Math.log;
-  vrna211["_memset"] = _memset;var _llvm_memset_p0i8_i32=_memset;
-  vrna211["_strncpy"] = _strncpy;
+  LibVrna211["_memset"] = _memset;var _llvm_memset_p0i8_i32=_memset;
+  LibVrna211["_strncpy"] = _strncpy;
   function _strstr(ptr1, ptr2) {
       var check = 0, start;
       do {
@@ -1904,7 +1904,7 @@ if (!awaitingMemoryInitializer) runPostSets();
       // http://pubs.opengroup.org/onlinepubs/000095399/functions/printf.html
       return _snprintf(s, undefined, format, varargs);
     }
-  vrna211["_memcpy"] = _memcpy;var _llvm_memcpy_p0i8_p0i8_i32=_memcpy;
+  LibVrna211["_memcpy"] = _memcpy;var _llvm_memcpy_p0i8_p0i8_i32=_memcpy;
   function _printf(format, varargs) {
       // int printf(const char *restrict format, ...);
       // http://pubs.opengroup.org/onlinepubs/000095399/functions/printf.html
@@ -1918,7 +1918,7 @@ if (!awaitingMemoryInitializer) runPostSets();
         this.name = "ExitStatus";
         this.message = "Program terminated with exit(" + status + ")";
         this.status = status;
-        vrna211.print('Exit Status: ' + status);
+        LibVrna211.print('Exit Status: ' + status);
       };
       ExitStatus.prototype = new Error();
       ExitStatus.prototype.constructor = ExitStatus;
@@ -2120,18 +2120,18 @@ if (!awaitingMemoryInitializer) runPostSets();
           }
           Browser.mainLoop.shouldPause = false;
         },updateStatus:function () {
-          if (vrna211['setStatus']) {
-            var message = vrna211['statusMessage'] || 'Please wait...';
+          if (LibVrna211['setStatus']) {
+            var message = LibVrna211['statusMessage'] || 'Please wait...';
             var remaining = Browser.mainLoop.remainingBlockers;
             var expected = Browser.mainLoop.expectedBlockers;
             if (remaining) {
               if (remaining < expected) {
-                vrna211['setStatus'](message + ' (' + (expected - remaining) + '/' + expected + ')');
+                LibVrna211['setStatus'](message + ' (' + (expected - remaining) + '/' + expected + ')');
               } else {
-                vrna211['setStatus'](message);
+                LibVrna211['setStatus'](message);
               }
             } else {
-              vrna211['setStatus']('');
+              LibVrna211['setStatus']('');
             }
           }
         }},isFullScreen:false,pointerLock:false,moduleContextCreatedCallbacks:[],workers:[],init:function () {
@@ -2147,7 +2147,7 @@ if (!awaitingMemoryInitializer) runPostSets();
         Browser.BlobBuilder = typeof MozBlobBuilder != "undefined" ? MozBlobBuilder : (typeof WebKitBlobBuilder != "undefined" ? WebKitBlobBuilder : (!Browser.hasBlobConstructor ? console.log("warning: no BlobBuilder") : null));
         Browser.URLObject = typeof window != "undefined" ? (window.URL ? window.URL : window.webkitURL) : console.log("warning: cannot create object URLs");
         // Support for plugins that can process preloaded files. You can add more of these to
-        // your app by creating and appending to vrna211.preloadPlugins.
+        // your app by creating and appending to LibVrna211.preloadPlugins.
         //
         // Each plugin is asked if it can handle a file based on the file's name. If it can,
         // it is given the file's raw data. When it is done, it calls a callback with the file's
@@ -2164,10 +2164,10 @@ if (!awaitingMemoryInitializer) runPostSets();
             'mp3': 'audio/mpeg'
           }[name.substr(name.lastIndexOf('.')+1)];
         }
-        if (!vrna211["preloadPlugins"]) vrna211["preloadPlugins"] = [];
+        if (!LibVrna211["preloadPlugins"]) LibVrna211["preloadPlugins"] = [];
         var imagePlugin = {};
         imagePlugin['canHandle'] = function(name) {
-          return !vrna211.noImageDecoding && /\.(jpg|jpeg|png|bmp)$/.exec(name);
+          return !LibVrna211.noImageDecoding && /\.(jpg|jpeg|png|bmp)$/.exec(name);
         };
         imagePlugin['handle'] = function(byteArray, name, onload, onerror) {
           var b = null;
@@ -2192,7 +2192,7 @@ if (!awaitingMemoryInitializer) runPostSets();
             canvas.height = img.height;
             var ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0);
-            vrna211["preloadedImages"][name] = canvas;
+            LibVrna211["preloadedImages"][name] = canvas;
             Browser.URLObject.revokeObjectURL(url);
             if (onload) onload(byteArray);
           };
@@ -2202,23 +2202,23 @@ if (!awaitingMemoryInitializer) runPostSets();
           };
           img.src = url;
         };
-        vrna211['preloadPlugins'].push(imagePlugin);
+        LibVrna211['preloadPlugins'].push(imagePlugin);
         var audioPlugin = {};
         audioPlugin['canHandle'] = function(name) {
-          return !vrna211.noAudioDecoding && name.substr(-4) in { '.ogg': 1, '.wav': 1, '.mp3': 1 };
+          return !LibVrna211.noAudioDecoding && name.substr(-4) in { '.ogg': 1, '.wav': 1, '.mp3': 1 };
         };
         audioPlugin['handle'] = function(byteArray, name, onload, onerror) {
           var done = false;
           function finish(audio) {
             if (done) return;
             done = true;
-            vrna211["preloadedAudios"][name] = audio;
+            LibVrna211["preloadedAudios"][name] = audio;
             if (onload) onload(byteArray);
           }
           function fail() {
             if (done) return;
             done = true;
-            vrna211["preloadedAudios"][name] = new Audio(); // empty shim
+            LibVrna211["preloadedAudios"][name] = new Audio(); // empty shim
             if (onerror) onerror();
           }
           if (Browser.hasBlobConstructor) {
@@ -2269,9 +2269,9 @@ if (!awaitingMemoryInitializer) runPostSets();
             return fail();
           }
         };
-        vrna211['preloadPlugins'].push(audioPlugin);
+        LibVrna211['preloadPlugins'].push(audioPlugin);
         // Canvas event setup
-        var canvas = vrna211['canvas'];
+        var canvas = LibVrna211['canvas'];
         canvas.requestPointerLock = canvas['requestPointerLock'] ||
                                     canvas['mozRequestPointerLock'] ||
                                     canvas['webkitRequestPointerLock'];
@@ -2287,7 +2287,7 @@ if (!awaitingMemoryInitializer) runPostSets();
         document.addEventListener('pointerlockchange', pointerLockChange, false);
         document.addEventListener('mozpointerlockchange', pointerLockChange, false);
         document.addEventListener('webkitpointerlockchange', pointerLockChange, false);
-        if (vrna211['elementPointerLock']) {
+        if (LibVrna211['elementPointerLock']) {
           canvas.addEventListener("click", function(ev) {
             if (!Browser.pointerLock && canvas.requestPointerLock) {
               canvas.requestPointerLock();
@@ -2295,7 +2295,7 @@ if (!awaitingMemoryInitializer) runPostSets();
             }
           }, false);
         }
-      },createContext:function (canvas, useWebGL, setInvrna211) {
+      },createContext:function (canvas, useWebGL, setInLibVrna211) {
         var ctx;
         try {
           if (useWebGL) {
@@ -2307,7 +2307,7 @@ if (!awaitingMemoryInitializer) runPostSets();
           }
           if (!ctx) throw ':(';
         } catch (e) {
-          vrna211.print('Could not create canvas - ' + e);
+          LibVrna211.print('Could not create canvas - ' + e);
           return null;
         }
         if (useWebGL) {
@@ -2318,19 +2318,19 @@ if (!awaitingMemoryInitializer) runPostSets();
             alert('WebGL context lost. You will need to reload the page.');
           }, false);
         }
-        if (setInvrna211) {
-          vrna211.ctx = ctx;
-          vrna211.useWebGL = useWebGL;
+        if (setInLibVrna211) {
+          LibVrna211.ctx = ctx;
+          LibVrna211.useWebGL = useWebGL;
           Browser.moduleContextCreatedCallbacks.forEach(function(callback) { callback() });
           Browser.init();
         }
         return ctx;
-      },destroyContext:function (canvas, useWebGL, setInvrna211) {},fullScreenHandlersInstalled:false,lockPointer:undefined,resizeCanvas:undefined,requestFullScreen:function (lockPointer, resizeCanvas) {
+      },destroyContext:function (canvas, useWebGL, setInLibVrna211) {},fullScreenHandlersInstalled:false,lockPointer:undefined,resizeCanvas:undefined,requestFullScreen:function (lockPointer, resizeCanvas) {
         this.lockPointer = lockPointer;
         this.resizeCanvas = resizeCanvas;
         if (typeof this.lockPointer === 'undefined') this.lockPointer = true;
         if (typeof this.resizeCanvas === 'undefined') this.resizeCanvas = false;
-        var canvas = vrna211['canvas'];
+        var canvas = LibVrna211['canvas'];
         function fullScreenChange() {
           Browser.isFullScreen = false;
           if ((document['webkitFullScreenElement'] || document['webkitFullscreenElement'] ||
@@ -2346,7 +2346,7 @@ if (!awaitingMemoryInitializer) runPostSets();
           } else if (Browser.resizeCanvas){
             Browser.setWindowedCanvasSize();
           }
-          if (vrna211['onFullScreen']) vrna211['onFullScreen'](Browser.isFullScreen);
+          if (LibVrna211['onFullScreen']) LibVrna211['onFullScreen'](Browser.isFullScreen);
         }
         if (!this.fullScreenHandlersInstalled) {
           this.fullScreenHandlersInstalled = true;
@@ -2405,17 +2405,17 @@ if (!awaitingMemoryInitializer) runPostSets();
         });
         if (!noRunDep) addRunDependency('al ' + url);
       },resizeListeners:[],updateResizeListeners:function () {
-        var canvas = vrna211['canvas'];
+        var canvas = LibVrna211['canvas'];
         Browser.resizeListeners.forEach(function(listener) {
           listener(canvas.width, canvas.height);
         });
       },setCanvasSize:function (width, height, noUpdates) {
-        var canvas = vrna211['canvas'];
+        var canvas = LibVrna211['canvas'];
         canvas.width = width;
         canvas.height = height;
         if (!noUpdates) Browser.updateResizeListeners();
       },windowedWidth:0,windowedHeight:0,setFullScreenCanvasSize:function () {
-        var canvas = vrna211['canvas'];
+        var canvas = LibVrna211['canvas'];
         this.windowedWidth = canvas.width;
         this.windowedHeight = canvas.height;
         canvas.width = screen.width;
@@ -2425,7 +2425,7 @@ if (!awaitingMemoryInitializer) runPostSets();
         HEAP32[((SDL.screen+Runtime.QUANTUM_SIZE*0)>>2)]=flags
         Browser.updateResizeListeners();
       },setWindowedCanvasSize:function () {
-        var canvas = vrna211['canvas'];
+        var canvas = LibVrna211['canvas'];
         canvas.width = this.windowedWidth;
         canvas.height = this.windowedHeight;
         var flags = HEAPU32[((SDL.screen+Runtime.QUANTUM_SIZE*0)>>2)];
@@ -2433,16 +2433,16 @@ if (!awaitingMemoryInitializer) runPostSets();
         HEAP32[((SDL.screen+Runtime.QUANTUM_SIZE*0)>>2)]=flags
         Browser.updateResizeListeners();
       }};
-__ATINIT__.unshift({ func: function() { if (!vrna211["noFSInit"] && !FS.init.initialized) FS.init() } });__ATMAIN__.push({ func: function() { FS.ignorePermissions = false } });__ATEXIT__.push({ func: function() { FS.quit() } });vrna211["FS_createFolder"] = FS.createFolder;vrna211["FS_createPath"] = FS.createPath;vrna211["FS_createDataFile"] = FS.createDataFile;vrna211["FS_createPreloadedFile"] = FS.createPreloadedFile;vrna211["FS_createLazyFile"] = FS.createLazyFile;vrna211["FS_createLink"] = FS.createLink;vrna211["FS_createDevice"] = FS.createDevice;
+__ATINIT__.unshift({ func: function() { if (!LibVrna211["noFSInit"] && !FS.init.initialized) FS.init() } });__ATMAIN__.push({ func: function() { FS.ignorePermissions = false } });__ATEXIT__.push({ func: function() { FS.quit() } });LibVrna211["FS_createFolder"] = FS.createFolder;LibVrna211["FS_createPath"] = FS.createPath;LibVrna211["FS_createDataFile"] = FS.createDataFile;LibVrna211["FS_createPreloadedFile"] = FS.createPreloadedFile;LibVrna211["FS_createLazyFile"] = FS.createLazyFile;LibVrna211["FS_createLink"] = FS.createLink;LibVrna211["FS_createDevice"] = FS.createDevice;
 ___setErrNo(0);
-vrna211["requestFullScreen"] = function(lockPointer, resizeCanvas) { Browser.requestFullScreen(lockPointer, resizeCanvas) };
-  vrna211["requestAnimationFrame"] = function(func) { Browser.requestAnimationFrame(func) };
-  vrna211["pauseMainLoop"] = function() { Browser.mainLoop.pause() };
-  vrna211["resumeMainLoop"] = function() { Browser.mainLoop.resume() };
+LibVrna211["requestFullScreen"] = function(lockPointer, resizeCanvas) { Browser.requestFullScreen(lockPointer, resizeCanvas) };
+  LibVrna211["requestAnimationFrame"] = function(func) { Browser.requestAnimationFrame(func) };
+  LibVrna211["pauseMainLoop"] = function() { Browser.mainLoop.pause() };
+  LibVrna211["resumeMainLoop"] = function() { Browser.mainLoop.resume() };
 var Math_min = Math.min;
 function invoke_vi(index,a1) {
   try {
-    vrna211.dynCall_vi(index,a1);
+    LibVrna211.dynCall_vi(index,a1);
   } catch(e) {
     if (typeof e !== 'number' && e !== 'longjmp') throw e;
     asm.setThrew(1, 0);
@@ -2450,7 +2450,7 @@ function invoke_vi(index,a1) {
 }
 function invoke_ii(index,a1) {
   try {
-    return vrna211.dynCall_ii(index,a1);
+    return LibVrna211.dynCall_ii(index,a1);
   } catch(e) {
     if (typeof e !== 'number' && e !== 'longjmp') throw e;
     asm.setThrew(1, 0);
@@ -2458,7 +2458,7 @@ function invoke_ii(index,a1) {
 }
 function invoke_viiiiiii(index,a1,a2,a3,a4,a5,a6,a7) {
   try {
-    vrna211.dynCall_viiiiiii(index,a1,a2,a3,a4,a5,a6,a7);
+    LibVrna211.dynCall_viiiiiii(index,a1,a2,a3,a4,a5,a6,a7);
   } catch(e) {
     if (typeof e !== 'number' && e !== 'longjmp') throw e;
     asm.setThrew(1, 0);
@@ -2466,7 +2466,7 @@ function invoke_viiiiiii(index,a1,a2,a3,a4,a5,a6,a7) {
 }
 function invoke_v(index) {
   try {
-    vrna211.dynCall_v(index);
+    LibVrna211.dynCall_v(index);
   } catch(e) {
     if (typeof e !== 'number' && e !== 'longjmp') throw e;
     asm.setThrew(1, 0);
@@ -2474,17 +2474,17 @@ function invoke_v(index) {
 }
 function invoke_iii(index,a1,a2) {
   try {
-    return vrna211.dynCall_iii(index,a1,a2);
+    return LibVrna211.dynCall_iii(index,a1,a2);
   } catch(e) {
     if (typeof e !== 'number' && e !== 'longjmp') throw e;
     asm.setThrew(1, 0);
   }
 }
 function asmPrintInt(x, y) {
-  vrna211.print('int ' + x + ',' + y);// + ' ' + new Error().stack);
+  LibVrna211.print('int ' + x + ',' + y);// + ' ' + new Error().stack);
 }
 function asmPrintFloat(x, y) {
-  vrna211.print('float ' + x + ',' + y);// + ' ' + new Error().stack);
+  LibVrna211.print('float ' + x + ',' + y);// + ' ' + new Error().stack);
 }
 // EMSCRIPTEN_START_ASM
 var asm=(function(global,env,buffer){"use asm";var a=new global.Int8Array(buffer);var b=new global.Int16Array(buffer);var c=new global.Int32Array(buffer);var d=new global.Uint8Array(buffer);var e=new global.Uint16Array(buffer);var f=new global.Uint32Array(buffer);var g=new global.Float32Array(buffer);var h=new global.Float64Array(buffer);var i=env.STACKTOP|0;var j=env.STACK_MAX|0;var k=env.tempDoublePtr|0;var l=env.ABORT|0;var m=env._stderr|0;var n=+env.NaN;var o=+env.Infinity;var p=0;var q=0;var r=0;var s=0;var t=0,u=0,v=0,w=0,x=0.0,y=0,z=0,A=0,B=0.0;var C=0;var D=0;var E=0;var F=0;var G=0;var H=0;var I=0;var J=0;var K=0;var L=0;var M=global.Math.floor;var N=global.Math.abs;var O=global.Math.sqrt;var P=global.Math.pow;var Q=global.Math.cos;var R=global.Math.sin;var S=global.Math.tan;var T=global.Math.acos;var U=global.Math.asin;var V=global.Math.atan;var W=global.Math.atan2;var X=global.Math.exp;var Y=global.Math.log;var Z=global.Math.ceil;var _=global.Math.imul;var $=env.abort;var aa=env.assert;var ab=env.asmPrintInt;var ac=env.asmPrintFloat;var ad=env.copyTempDouble;var ae=env.copyTempFloat;var af=env.min;var ag=env.invoke_vi;var ah=env.invoke_ii;var ai=env.invoke_viiiiiii;var aj=env.invoke_v;var ak=env.invoke_iii;var al=env._llvm_lifetime_end;var am=env._snprintf;var an=env._abort;var ao=env._fprintf;var ap=env._toupper;var aq=env._printf;var ar=env.__reallyNegative;var as=env._strncat;var at=env._log;var au=env._fabs;var av=env.___setErrNo;var aw=env._fwrite;var ax=env._write;var ay=env._exit;var az=env._sprintf;var aA=env._sin;var aB=env._sysconf;var aC=env.__formatString;var aD=env._pwrite;var aE=env._strstr;var aF=env._llvm_pow_f64;var aG=env._sbrk;var aH=env.___errno_location;var aI=env._llvm_lifetime_start;var aJ=env._exp;var aK=env._time;var aL=env.__exit;var aM=env._memchr;
@@ -2495,33 +2495,33 @@ function bL(a){a=a|0;var b=0,d=0,e=0,f=0,g=0,h=0,i=0,j=0,k=0,l=0,m=0,n=0,o=0,p=0
 var aN=[bZ,bZ,bZ,bZ,bZ,bZ,bZ,bZ];var aO=[b_,b_,b_,b_,b_,b_,b_,b_];var aP=[b$,b$,bi,b$,bj,b$,bk,b$];var aQ=[b0,b0,b0,b0,b0,b0,b0,b0];var aR=[b1,b1,b1,b1,b1,b1,b1,b1];return{_strlen:bP,_fold:a5,_free:bM,_strncpy:bS,_space:bF,_memset:bR,_malloc:bL,_memcpy:bT,_pf_fold:bt,_export_bppm:bz,_strcpy:bQ,_calloc:bN,_energy_of_structure:ba,stackAlloc:aS,stackSave:aT,stackRestore:aU,setThrew:aV,setTempRet0:aW,setTempRet1:aX,setTempRet2:aY,setTempRet3:aZ,setTempRet4:a_,setTempRet5:a$,setTempRet6:a0,setTempRet7:a1,setTempRet8:a2,setTempRet9:a3,dynCall_vi:bU,dynCall_ii:bV,dynCall_viiiiiii:bW,dynCall_v:bX,dynCall_iii:bY}})
 // EMSCRIPTEN_END_ASM
 ({ Math: Math, Int8Array: Int8Array, Int16Array: Int16Array, Int32Array: Int32Array, Uint8Array: Uint8Array, Uint16Array: Uint16Array, Uint32Array: Uint32Array, Float32Array: Float32Array, Float64Array: Float64Array }, { abort: abort, assert: assert, asmPrintInt: asmPrintInt, asmPrintFloat: asmPrintFloat, copyTempDouble: copyTempDouble, copyTempFloat: copyTempFloat, min: Math_min, invoke_vi: invoke_vi, invoke_ii: invoke_ii, invoke_viiiiiii: invoke_viiiiiii, invoke_v: invoke_v, invoke_iii: invoke_iii, _llvm_lifetime_end: _llvm_lifetime_end, _snprintf: _snprintf, _abort: _abort, _fprintf: _fprintf, _toupper: _toupper, _printf: _printf, __reallyNegative: __reallyNegative, _strncat: _strncat, _log: _log, _fabs: _fabs, ___setErrNo: ___setErrNo, _fwrite: _fwrite, _write: _write, _exit: _exit, _sprintf: _sprintf, _sin: _sin, _sysconf: _sysconf, __formatString: __formatString, _pwrite: _pwrite, _strstr: _strstr, _llvm_pow_f64: _llvm_pow_f64, _sbrk: _sbrk, ___errno_location: ___errno_location, _llvm_lifetime_start: _llvm_lifetime_start, _exp: _exp, _time: _time, __exit: __exit, _memchr: _memchr, STACKTOP: STACKTOP, STACK_MAX: STACK_MAX, tempDoublePtr: tempDoublePtr, ABORT: ABORT, NaN: NaN, Infinity: Infinity, _stderr: _stderr }, buffer);
-var _strlen = vrna211["_strlen"] = asm._strlen;
-var _fold = vrna211["_fold"] = asm._fold;
-var _free = vrna211["_free"] = asm._free;
-var _strncpy = vrna211["_strncpy"] = asm._strncpy;
-var _space = vrna211["_space"] = asm._space;
-var _memset = vrna211["_memset"] = asm._memset;
-var _malloc = vrna211["_malloc"] = asm._malloc;
-var _memcpy = vrna211["_memcpy"] = asm._memcpy;
-var _pf_fold = vrna211["_pf_fold"] = asm._pf_fold;
-var _export_bppm = vrna211["_export_bppm"] = asm._export_bppm;
-var _strcpy = vrna211["_strcpy"] = asm._strcpy;
-var _calloc = vrna211["_calloc"] = asm._calloc;
-var _energy_of_structure = vrna211["_energy_of_structure"] = asm._energy_of_structure;
-var dynCall_vi = vrna211["dynCall_vi"] = asm.dynCall_vi;
-var dynCall_ii = vrna211["dynCall_ii"] = asm.dynCall_ii;
-var dynCall_viiiiiii = vrna211["dynCall_viiiiiii"] = asm.dynCall_viiiiiii;
-var dynCall_v = vrna211["dynCall_v"] = asm.dynCall_v;
-var dynCall_iii = vrna211["dynCall_iii"] = asm.dynCall_iii;
+var _strlen = LibVrna211["_strlen"] = asm._strlen;
+var _fold = LibVrna211["_fold"] = asm._fold;
+var _free = LibVrna211["_free"] = asm._free;
+var _strncpy = LibVrna211["_strncpy"] = asm._strncpy;
+var _space = LibVrna211["_space"] = asm._space;
+var _memset = LibVrna211["_memset"] = asm._memset;
+var _malloc = LibVrna211["_malloc"] = asm._malloc;
+var _memcpy = LibVrna211["_memcpy"] = asm._memcpy;
+var _pf_fold = LibVrna211["_pf_fold"] = asm._pf_fold;
+var _export_bppm = LibVrna211["_export_bppm"] = asm._export_bppm;
+var _strcpy = LibVrna211["_strcpy"] = asm._strcpy;
+var _calloc = LibVrna211["_calloc"] = asm._calloc;
+var _energy_of_structure = LibVrna211["_energy_of_structure"] = asm._energy_of_structure;
+var dynCall_vi = LibVrna211["dynCall_vi"] = asm.dynCall_vi;
+var dynCall_ii = LibVrna211["dynCall_ii"] = asm.dynCall_ii;
+var dynCall_viiiiiii = LibVrna211["dynCall_viiiiiii"] = asm.dynCall_viiiiiii;
+var dynCall_v = LibVrna211["dynCall_v"] = asm.dynCall_v;
+var dynCall_iii = LibVrna211["dynCall_iii"] = asm.dynCall_iii;
 Runtime.stackAlloc = function(size) { return asm.stackAlloc(size) };
 Runtime.stackSave = function() { return asm.stackSave() };
 Runtime.stackRestore = function(top) { asm.stackRestore(top) };
 // Warning: printing of i64 values may be slightly rounded! No deep i64 math used, so precise i64 code not included
 var i64Math = null;
 // === Auto-generated postamble setup entry stuff ===
-vrna211.callMain = function callMain(args) {
+LibVrna211.callMain = function callMain(args) {
   assert(runDependencies == 0, 'cannot call main when async dependencies remain! (listen on __ATMAIN__)');
-  assert(!vrna211['preRun'] || vrna211['preRun'].length == 0, 'cannot call main when preRun functions remain to be called');
+  assert(!LibVrna211['preRun'] || LibVrna211['preRun'].length == 0, 'cannot call main when preRun functions remain to be called');
   args = args || [];
   ensureInitRuntime();
   var argc = args.length+1;
@@ -2541,13 +2541,13 @@ vrna211.callMain = function callMain(args) {
   var ret;
   var initialStackTop = STACKTOP;
   try {
-    ret = vrna211['_main'](argc, argv, 0);
+    ret = LibVrna211['_main'](argc, argv, 0);
   }
   catch(e) {
     if (e.name == 'ExitStatus') {
       return e.status;
     } else if (e == 'SimulateInfiniteLoop') {
-      vrna211['noExitRuntime'] = true;
+      LibVrna211['noExitRuntime'] = true;
     } else {
       throw e;
     }
@@ -2557,15 +2557,15 @@ vrna211.callMain = function callMain(args) {
   return ret;
 }
 function run(args) {
-  args = args || vrna211['arguments'];
+  args = args || LibVrna211['arguments'];
   if (runDependencies > 0) {
-    vrna211.printErr('run() called, but dependencies remain, so not running');
+    LibVrna211.printErr('run() called, but dependencies remain, so not running');
     return 0;
   }
-  if (vrna211['preRun']) {
-    if (typeof vrna211['preRun'] == 'function') vrna211['preRun'] = [vrna211['preRun']];
-    var toRun = vrna211['preRun'];
-    vrna211['preRun'] = [];
+  if (LibVrna211['preRun']) {
+    if (typeof LibVrna211['preRun'] == 'function') LibVrna211['preRun'] = [LibVrna211['preRun']];
+    var toRun = LibVrna211['preRun'];
+    LibVrna211['preRun'] = [];
     for (var i = toRun.length-1; i >= 0; i--) {
       toRun[i]();
     }
@@ -2579,25 +2579,25 @@ function run(args) {
     preMain();
     var ret = 0;
     calledRun = true;
-    if (vrna211['_main'] && shouldRunNow) {
-      ret = vrna211.callMain(args);
-      if (!vrna211['noExitRuntime']) {
+    if (LibVrna211['_main'] && shouldRunNow) {
+      ret = LibVrna211.callMain(args);
+      if (!LibVrna211['noExitRuntime']) {
         exitRuntime();
       }
     }
-    if (vrna211['postRun']) {
-      if (typeof vrna211['postRun'] == 'function') vrna211['postRun'] = [vrna211['postRun']];
-      while (vrna211['postRun'].length > 0) {
-        vrna211['postRun'].pop()();
+    if (LibVrna211['postRun']) {
+      if (typeof LibVrna211['postRun'] == 'function') LibVrna211['postRun'] = [LibVrna211['postRun']];
+      while (LibVrna211['postRun'].length > 0) {
+        LibVrna211['postRun'].pop()();
       }
     }
     return ret;
   }
-  if (vrna211['setStatus']) {
-    vrna211['setStatus']('Running...');
+  if (LibVrna211['setStatus']) {
+    LibVrna211['setStatus']('Running...');
     setTimeout(function() {
       setTimeout(function() {
-        vrna211['setStatus']('');
+        LibVrna211['setStatus']('');
       }, 1);
       doRun();
     }, 1);
@@ -2606,17 +2606,17 @@ function run(args) {
     return doRun();
   }
 }
-vrna211['run'] = vrna211.run = run;
+LibVrna211['run'] = LibVrna211.run = run;
 // {{PRE_RUN_ADDITIONS}}
-if (vrna211['preInit']) {
-  if (typeof vrna211['preInit'] == 'function') vrna211['preInit'] = [vrna211['preInit']];
-  while (vrna211['preInit'].length > 0) {
-    vrna211['preInit'].pop()();
+if (LibVrna211['preInit']) {
+  if (typeof LibVrna211['preInit'] == 'function') LibVrna211['preInit'] = [LibVrna211['preInit']];
+  while (LibVrna211['preInit'].length > 0) {
+    LibVrna211['preInit'].pop()();
   }
 }
 // shouldRunNow refers to calling main(), not run().
 var shouldRunNow = true;
-if (vrna211['noInitialRun']) {
+if (LibVrna211['noInitialRun']) {
   shouldRunNow = false;
 }
 run();
