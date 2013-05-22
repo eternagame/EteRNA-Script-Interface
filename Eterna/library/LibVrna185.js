@@ -2698,10 +2698,28 @@ run();
     }
     
     LibVrna185.prototype.fold_constrained = function(sequence, constraint) {
-      // TODO: well, implement :)
+      var vrna_fold = Module.cwrap( 'fold', 'number', ['string','number'] );
+      var vrna_space = Module.cwrap( 'space', 'number', ['number'] );
+      var vrna_free = Module.cwrap( 'free', 'number', ['number'] );
+
+      var ret = {};
+      var struct = vrna_space( 1+sequence.length );
+      Module.writeStringToMemory( constraint, struct );
       // The difficulty is about accessing the C global variable fold_constrained ...
-      // The Emscripten documentation is unclear about how to go about such things...    
-      return null;
+      // The Emscripten documentation is unclear about how to go about such things.
+      // Conversing with the Emscripten creator on IRC resulted in the advice to not
+      // use the NAMED_GLOBALS feature of Emscripten, and simply add accessor
+      // functions to the C code...
+      // After some thinking, I'd rather not patch a library that is guaranteed to
+      // no longer change in the future. Accessing the Emscripten heap looks ugly,
+      // but I think it's the best solution here
+      save_fc = Module.HEAP32[1464439];
+      Module.HEAP32[1464439] = 1;
+      ret.free_energy = vrna_fold( sequence, struct );
+      ret.mfe_structure = Module.Pointer_stringify( struct );
+      Module.HEAP32[1464439] = save_fc;
+      vrna_free( struct );
+      return ret;
     }
 
     return LibVrna185;
