@@ -17,6 +17,9 @@ Installation
   
         git clone https://github.com/EteRNAgame/EteRNA-Script-Interface.git
 
+  or
+        git clone git://github.com/EteRNAgame/EteRNA-Script-Interface.git
+      
 
 Usage
 -----
