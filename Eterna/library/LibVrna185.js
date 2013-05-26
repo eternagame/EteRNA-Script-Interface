@@ -2612,7 +2612,7 @@ run();
       return vrna_eos( sequence, structure );
     }
     
-    LibVrna185.prototype.fold_constrained = function(sequence, constraint) {
+    LibVrna185.prototype.foldWithConstraint = function(sequence, constraint) {
       var vrna_fold = Module.cwrap( 'fold', 'number', ['string','number'] );
       var vrna_space = Module.cwrap( 'space', 'number', ['number'] );
       var vrna_free = Module.cwrap( 'free', 'number', ['number'] );
