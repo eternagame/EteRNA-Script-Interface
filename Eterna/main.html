@@ -44,6 +44,10 @@
     <script type="text/javascript" src="server_resources/jscripts/script.js"></script>
     <!-- page builder -->
     
+    <!-- mock datas -->
+    <script type="text/javascript" src="server_resources/mock.js"></script>
+    <!-- mock datas -->
+    
     <!-- connector -->
     <script type="text/javascript" src="script-connector.js"></script>
     <!-- connector -->
@@ -60,7 +64,17 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   </head>
   <body>
-  
+  <div id="mock" style="position:absolute; left:750px; top:200px; width:100%; height:100%;">
+     Mock Datas<br>
+     <div style="padding:5px;">
+      puzzle : <input id="puzzle_mock" type="text" style="width:400px;"/>
+         <a id="puzzle_apply" class="clickable green-button rounded-5" style="padding:5px;">apply</a>
+     </div>
+     <div style="padding:5px;">  
+      user : <input id="user_mock" type="text" style="width:400px;"/>
+        <a id="user_apply" class="clickable green-button rounded-5" style="padding:5px;">apply</a>
+     </div>
+  </div>
   </body>
 </html>
 

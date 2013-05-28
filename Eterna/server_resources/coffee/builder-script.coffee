@@ -99,29 +99,34 @@ class @BuilderScriptPage extends Builder
           @build_script_show(block, $container, params)
         else
           @build_script_create(block, $container, params)
-
-        #initialize test tutorials button
-#        if $test_tutorials = @get_element("test_tutorials")
-#          $test_tutorials.click(()=>
-#            Overlay.set_loading("replying..")
-#            Overlay.show()
-#            input = @get_inputs()
-#            source = @get_source()
-#            if input && input[0] 
-#              name = input[0]['value']
-#            @test_scripts(name, undefined, source, (test)=>
-#              if $test_result = @get_element("test-result")
-#                Overlay.hide()
-#                $test_result.html('')
-#                @load_test_result(test)
-#            , (error)=>
-#              alert "Evaluation server is not available now."
-#              Overlay.hide()
-#            )
-#          )  
+ 
+        @initialize_test_script()
       )
     else
       @build_script_create(block, $container, params)  
+    
+    return @
+  
+  initialize_test_script : () ->
+     #initialize test tutorials button
+    if $test_script = @get_element("test-script")
+      $test_script.click(()=>
+        Overlay.set_loading("replying..")
+        Overlay.show()
+        input = @get_inputs()
+        source = @get_source()
+        if input && input[0] 
+          name = input[0]['value']
+        @test_scripts(name, undefined, source, (test)=>
+          if $test_result = @get_element("test-result")
+            Overlay.hide()
+            $test_result.html('')
+            @load_test_result(test)
+        , (error)=>
+          alert "Evaluation server is not available now."
+          Overlay.hide()
+        )
+      ) 
     
   build_script_create : (block, $container, params) ->
     ThemeCompiler.compile_block(block,params,$container)
@@ -203,7 +208,7 @@ class @BuilderScriptPage extends Builder
               value = input_script['value']
               block.add_block($input_containers, {name:name, value:value})
         
-    @load_test_result(script['test'])
+    #@load_test_result(script['test'])
     
     if $description = @get_element("description-info")
       if description = script['body']
@@ -219,8 +224,10 @@ class @BuilderScriptPage extends Builder
       if type = script['type']
         $type.html(type)
       else
+        type = "Etc"
         $type.html("Etc")
-      if type != "Puzzle solving"
+        
+      if type == "Etc"
           if $see_results = @get_element("see-results")
             $see_results.hide()
         
@@ -233,13 +240,13 @@ class @BuilderScriptPage extends Builder
   load_test_result : (test_result) ->
     if $test_result = @get_element("test-result")
       if tests = test_result
-        block = Blocks("block-test-result")
+        block = Blocks("code-test-result")
         for i in [0..tests.length-1]
           test = tests[i]
           test_param = {}
           test_param['puzzle_nid'] = test['nid']
           test_param['puzzle_title'] = test['name']
-          test_param['num_cleared'] = test['num_cleared']
+          test_param['num_cleared'] = if test['num_cleared']? then test['num_cleared'] else 0
           test_param['test_result'] = test['result']
           test_param['test_cause'] = if test['cause'].length > 25 then test['cause'].substring(0,25) + "..." else test['cause']
           test_param['test_time'] = test['eval_time'] / 1000
@@ -284,32 +291,6 @@ class @BuilderScriptPage extends Builder
       Utils.redirect_to("/web/script/"+data['nid']+"/")
       Overlay.hide()
       )          
-
-  get_tutorial_infos : () ->
-    tutorial_infos = new Array()
-    tutorial_infos.push({puzzle:{id:"13450", title:"Tutorial 6 : Final!", secstruct:"(((((...((((...(((....)))...))))...)))))"}})
-    tutorial_infos.push({puzzle:{id:"496828", title:"Tutorial 5 : More Loops!", secstruct:".(.(....).)."}})
-    tutorial_infos.push({puzzle:{id:"13405", title:"Tutorial 4 : Stacks and Loops!", secstruct:"((((....))))"}})
-    tutorial_infos.push({puzzle:{id:"13449", title:"Tutorial 3 : Stacks!", secstruct:"((((....))))"}})
-    tutorial_infos.push({puzzle:{id:"13399", title:"Tutorial 2 : Pairs!", secstruct:"((((....))))"}})
-    tutorial_infos.push({puzzle:{id:"13375", title:"Tutorial 1 : Basics!", secstruct:"...."}})
-    
-# To automatically get tutorial infos
-#    PageData.get_tutorials((data)->
-#      tutorials = data['puzzles']
-#      tutorial_infos = new Array()
-#      get_puzzle = (id) =>
-#        PageData.get_puzzle(id, (data) =>
-#          tutorial_infos.push(data)
-#          if tutorials.length > 0
-#            get_puzzle((tutorials.pop())['id'])
-#          else success_cb(tutorial_infos)    
-#        , (data) ->
-#          alert "Get puzzle information fail!!!, please try again"
-#        )
-#      get_puzzle((tutorials.pop())['id'])
-#    )
-    return tutorial_infos
 
   test_scripts : (input, target_info, source, success_cb, fail_cb) ->    
     test = new Array()
@@ -358,8 +339,7 @@ class @BuilderScriptPage extends Builder
               
   initialize_editor : (readonly) ->
     #initialize editor
-    $code = @get_element("code")
-    if $code
+    if $code = @get_element("code")
       @editor = CodeMirror.fromTextArea($code.get(0), {
         lineNumbers:true,
         matchBrackets:true,
@@ -375,7 +355,7 @@ class @BuilderScriptPage extends Builder
     flashvars = {}
     flash_params =  {allowScriptAccesss: "always"}
     attributes = {id: "viennalib"};
-    swfobject.embedSWF("/eterna_resources/scriptfold.swf", "viennalib", "0", "0", "9.0.0", false, flashvars, flash_params, attributes);
+    swfobject.embedSWF("http://kws.eternadev.org/eterna_resources/scriptfold.swf", "viennalib", "0", "0", "9.0.0", false, flashvars, flash_params, attributes);
     
  
   initialize_pervasives : () ->
@@ -439,44 +419,71 @@ class @BuilderScriptPage extends Builder
       if value != "" then timeout_sec = value
     code = @insert_timeout(code, timeout_sec)
     
-    if @isWebWorkerSupport()
-      timeout = false
-      tick = 1000
-      
-      worker = new Worker "/workbranch_kws/frontend/jscripts/eterna/script-library.js"
-      worker.onmessage = (event) =>
-        data = event.data
-        if data && data.cmd
-          evaluation = data.cmd+"('"+data.arg+"')"
-          @evaluate(evaluation)
-        else
-          @outln(data)
-          timeout = true
-        return
-        
-      @resetTimeValue()  
-      time = new Date() 
-      timer = () =>
-        _time = new Date()
-        _time.setTime(_time.getTime() - time.getTime())
-        hour = _time.getHours()
-        min = _time.getMinutes()
-        sec = _time.getSeconds()
-        @setTimeValue(hour,min,sec) 
-        if !timeout
-          setTimeout(timer, tick)
-        else return
-      setTimeout(timer,tick)
-      
-      funcs = eval("var funcs='';for(var method in this) funcs+='function '+method+'(_arg){postMessage({cmd:\"'+method+'\",arg:_arg});};'; funcs;")
-      statement = "function lambda(){"+param+code+"};lambda();"
-      param = funcs + statement
-      worker.postMessage(param)
-    else
+    #dynamic linking libraries
+    final_run = (param,code) =>
       try
         @outln(@evaluate(param+code))
       catch Error
-        @outln(Error)  
+        @outln(Error) 
+    
+    
+    if !(@loader?)
+      @loader = new LibLoader()
+    if Overlay?
+      Overlay.set_loading("replying..")
+      Overlay.show()
+      
+    outln("Library Loader use.... " + @loader.getUse())
+    @loader.parse(code, (libs) =>
+      @loader.dynamicLoad(libs,(lib) =>
+          if lib
+            outln(@loader.getName(lib) + " loading.... ")
+        , (state)=>
+            outln(@loader.getNameFromState(state) + " loading " + @loader.getSuccessFromState(state))
+        , (states)=>
+          if Overlay?
+            Overlay.hide()
+          final_run(param,code)
+        )
+      )
+#    if @isWebWorkerSupport()
+#      timeout = false
+#      tick = 1000
+      
+#      worker = new Worker "/workbranch_kws/frontend/jscripts/eterna/script-library.js"
+#      worker.onmessage = (event) =>
+#        data = event.data
+#        if data && data.cmd
+#          evaluation = data.cmd+"('"+data.arg+"')"
+#          @evaluate(evaluation)
+#        else
+#          @outln(data)
+#          timeout = true
+#        return
+        
+#      @resetTimeValue()  
+#      time = new Date() 
+#      timer = () =>
+#        _time = new Date()
+#        _time.setTime(_time.getTime() - time.getTime())
+#        hour = _time.getHours()
+#        min = _time.getMinutes()
+#        sec = _time.getSeconds()
+#        @setTimeValue(hour,min,sec) 
+#        if !timeout
+#          setTimeout(timer, tick)
+#        else return
+#      setTimeout(timer,tick)
+      
+#      funcs = eval("var funcs='';for(var method in this) funcs+='function '+method+'(_arg){postMessage({cmd:\"'+method+'\",arg:_arg});};'; funcs;")
+#      statement = "function lambda(){"+param+code+"};lambda();"
+#      param = funcs + statement
+#      worker.postMessage(param)
+#    else
+#      try
+#        @outln(@evaluate(param+code))
+#      catch Error
+#        @outln(Error)  
 
   insert_timeout : (source, timeout) ->
     inserted_code = "if((new Date()).getTime() - global_timer.getTime() > " + timeout * 1000 + ") {outln(\""+timeout+"sec timeout\");return;};"
@@ -506,7 +513,9 @@ class @BuilderScriptPage extends Builder
     return code   
         
   evaluate : (source) ->
-    Lib = new Library
+    if !(@Lib?)
+      @Lib = new Library
+    Lib = @Lib
     statement = "function lambda(){"+source+"};"
     result = eval(statement+"lambda();")
     return "\nReturn value : " + result      
@@ -544,6 +553,10 @@ class @BuilderScriptPage extends Builder
     if @editor
       return @editor.getValue()
     return ""
+
+  put_source : (src) ->
+    if @editor
+      @editor.setValue(src)
             
 class @BuilderInput extends Builder
   on_build : (block, $container, params) ->
@@ -558,6 +571,7 @@ class @BuilderScriptTestResultPage extends Builder
     @size = 20
     @before_skip = @size
     @after_skip = @size
+    
     ThemeCompiler.compile_block(block,params,$container)
     @generate_testresult(params['nid'], params)
     
@@ -605,24 +619,30 @@ class @BuilderScriptTestResultPage extends Builder
         if !(script['tested_time']?)
           $tested_time.html("Please wait for test results")
         else
-          $tested_time.html(script['tested_time'])    
+          $tested_time.html(script['tested_time'])
+      @initialize_table_header(script['type'])    
       test = script['test']
       if test
         before = test['before']
         after = test['after']
-        if $record = @get_element("record")
-          @show_record($record, test['before']['success']+test['after']['success'], test['before']['fail'] + test['after']['fail'])
-        if $record_before = @get_element("record-before")
-          @show_record($record_before, test['before']['success'], test['before']['fail'])
-        if $record_after = @get_element("record-after")
-          @show_record($record_after, test['after']['success'], test['after']['fail'])
+        if script['type'] == "Puzzle solving"
+          if $record = @get_element("record")
+            @show_record($record, test['before']['success']+test['after']['success'], test['before']['fail'] + test['after']['fail'])
+          if $record_before = @get_element("record-before")
+            @show_record($record_before, test['before']['success'], test['before']['fail'])
+          if $record_after = @get_element("record-after")
+            @show_record($record_after, test['after']['success'], test['after']['fail'])
         @load_test_result(before['test'], after['test'])
 
       $bloading.hide()
       $aloading.hide()
   
       )
-      
+  initialize_table_header : (type) ->
+    if $test_result_table_header = @get_element("test-result-table-header")
+      block = Blocks("table-header-block")
+      block.add_block($test_result_table_header, {type:type})
+        
   load_test_result : (before, after) ->
     if $test_result_before = @get_element("test-result-before")
       @load_test_result_with_container($test_result_before, before)
@@ -658,16 +678,30 @@ class @BuilderScriptTestResultPage extends Builder
      
 
   load_test_result_packer : ($test_result, testresults) ->
-#    packer = Packers($test_result)
     block = Blocks("test-result-block")
     test_result_params = []
     for test in testresults
       test_param = {}
+      if test['puzzle_nid']
+        # rna scoring
+        puzzle_nid = test['puzzle_nid']
+        solution_nid = test['nid']
+        test_param['type'] = "RNA scoring"
+        test_param['nid'] = puzzle_nid
+        test_param['score'] = Number(test['cause'])
+        if isNaN(test_param['score'])
+          test_param['score'] = "Not a Number"
+        test_param['target_url'] = "/game/browse/"+puzzle_nid+"/?filter1=Id&filter1_arg1="+solution_nid+"&filter1_arg2="+solution_nid
+      else
+        #puzzle solving
+        test_param['type'] = "Puzzle solving"
+        test_param['nid'] = test['nid']
+        test_param['target_url'] = "/web/puzzle/"+test_param['puzzle_nid']+"/"
       test_param['puzzle_nid'] = test['nid']
       test_param['puzzle_title'] = test['name']
-      test_param['num_cleared'] = test['num_cleared']
+      
+      test_param['num_cleared'] = if test['num_cleared']? then test['num_cleared'] else 0
       test_param['test_result'] = test['result']
-      #test_param['test_cause'] = if test['cause'].length > 25 then test['cause'].substring(0,25) + "..." else test['cause']
       test_param['test_cause'] = test['cause']
       test_param['test_time'] = test['eval_time'] / 1000
       test_result_params.push(test_param)
@@ -680,5 +714,120 @@ class @BuilderScriptTestResultPage extends Builder
               $show_sequence.hide()
               $test_cause.show()
             )
+            
+
+class @LibLoader
+  constructor : () ->
+    @url = "/EteRNA-Script-Interface/Eterna/library/"
+    @states = new Array
+    @_use = true
     
-#    packer.add(test_result_params)
+  setUse : (b) ->
+    @_use = b
+  
+  getUse : () ->
+    return @_use
+  
+  setDefaultUrl : (url) ->
+    @url = url
+  
+  getDefaultUrl : () ->
+    return @url
+  
+  check : (libs) ->
+    for ii in [0..libs.length-1]
+      if libs['name']? then return false
+    return true
+    
+  getName : (lib) ->
+    if lib
+      return lib['name']
+  
+  getUrl : (lib) ->
+    if lib
+      return lib['url']
+    
+  parse : (code, cb) ->
+    # temporarily hardcoded libraries
+    # must be refactored
+    libs = [{name:"LibVrna185"},{name:"LibVrna211"}]
+    need = new Array
+    for ii in [0..libs.length-1]
+      lib = libs[ii]
+      if code.indexOf(@getName(lib)) != -1
+        need.push(lib)
+    cb(need)
+
+  dynamicLoad : (libs, before_cb, after_cb, final_cb) ->
+    if !libs.length || !@getUse()
+      final_cb()
+      return
+    
+    _isFinish = (num) =>
+      return @getStates().length >= num
+      
+    for ii in [0..libs.length-1]
+      lib = libs[ii]
+      if lib
+        _name = @getName(lib)
+        _url = @getUrl(lib)
+        before_cb(lib)
+        if s = @alreadyLoad(_name,"js",_url)
+          after_cb(s)
+          if _isFinish(libs.length) && ii==libs.length-1 
+            final_cb(@getStates())  
+        else  
+          do (_name, _url) =>
+            @load(_name, "js", _url, (data,textStatus,jqxhr)=>
+              state = @makeState(_name,_url,textStatus)
+              @setState(state)
+              after_cb(state)
+              if _isFinish(libs.length)
+                final_cb(@getStates())
+                return
+              )
+       
+  load : (name, ext, url, cb) ->
+    if url
+      target = url + name + "." + ext
+    else
+      target = @liburl(name)
+    $.getScript(target, (data, textStatus, jqxhr)=>
+      if cb
+        cb(data,textStatus,jqxhr)
+    )
+    
+  alreadyLoad : (name, ext, url) ->
+    if states = @getStates()
+      for ii in [0..states.length-1]
+        state = states[ii]
+        if state && @getNameFromState(state) && @getNameFromState(state) == name
+          return state
+    return null
+       
+  getStates : () ->
+    return @states
+        
+  setState : (state) ->
+    if @getStates()
+      @getStates().push(state)
+    else
+      @states = new Array
+      @states.push(state)
+  
+  resetStates : () ->
+    @states = new Array
+  
+  makeState : (name,url,ok) ->
+    return {"name":name,"url":url,"ok":ok}
+  
+  getNameFromState : (state) ->
+    return state['name']
+  
+  getUrlFromState : (state) ->
+    return state['url']
+  
+  getSuccessFromState : (state) ->
+    return state['ok']    
+  liburl : (name) ->
+    return @url+name+".js"
