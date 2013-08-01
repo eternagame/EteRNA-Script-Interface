@@ -2645,6 +2645,34 @@ run();
       return ret;
     }
 
+    LibVrna211.prototype.partitionFunction(sequence) {
+      var vrna_pf_fold = Module.cwrap( 'pf_fold', 'number', ['string','number'] );
+      var vrna_export_bppm = Module.cwrap( 'export_bppm', 'number', [] );
+      var vrna_space = Module.cwrap( 'space', 'number', ['number'] );
+      var vrna_free = Module.cwrap( 'free', 'number', ['number'] );
+
+      var ret = {};
+      var struct = vrna_space( 1+sequence.length );
+      ret.free_energy = vrna_pf_fold( sequence, struct );
+      ret.pf_structure = Module.Pointer_stringify( struct );
+      vrna_free( struct );
+      
+      len = sequence.length;
+      ret.iindx = new Array;
+      for( i = 1; i <= len; i++ ) ret.iindx[i] = (((len + 1 - i) * (len - i)) >> 1) + len + 1;
+      
+      ptr = vrna_export_bppm();
+      ret.probs = new Array;
+      for( i = 1; i < len; i++ ) {
+        for( j = i+1; j < len; j++ ) {
+          k = ret.iindx[i] - j;
+          ret.probs[k] = Module.getValue(ptr + (k<<3), 'double');
+        }
+      }
+      
+      return ret;
+    }
+
     return LibVrna211;
     
   })();
